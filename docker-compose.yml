@@ -1,0 +1,53 @@
+version: '3.9'
+
+services:
+  nginx:
+    container_name: 'fc-proxy-nginx'
+    build:
+      context: ./nginx
+      dockerfile: .Dockerfile
+    image: henriquemps/fcproxynginx
+    ports:
+      - '8080:8080'
+    networks:
+      - fullcycle
+    depends_on:
+      - app
+
+  app:
+    container_name: 'fc-app-node'
+    build:
+      context: ./app
+      dockerfile: .Dockerfile
+    image: henriquemps/fcappnode
+    command: sh -c '/usr/wait-for-it.sh fc-db-mysql:3306 -- npm start'
+    volumes:
+      - ./app:/app
+    networks:
+      - fullcycle
+    depends_on:
+      - db
+
+  db:
+    container_name: 'fc-db-mysql'
+    image: mysql:latest
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./db/data-mysql:/var/lib/mysql
+      - ./db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_DATABASE: 'fullcycle'
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_USER: 'fullcycle'
+      MYSQL_PASSWORD: 'fullcycle'
+    expose:
+      - '3306'
+    ports:
+      - '3306:3306'
+    networks:
+      - fullcycle
+
+networks:
+  fullcycle:
+    driver: bridge
