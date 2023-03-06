@@ -20,7 +20,7 @@ services:
       context: ./app
       dockerfile: .Dockerfile
     image: henriquemps/fcappnode
-    command: sh -c '/usr/wait-for-it.sh fc-db-mysql:3306 -- npm start'
+    command: sh -c '/usr/wait-for-it.sh fc-db-mysql:3306 -- npm i && npm start'
     volumes:
       - ./app:/app
     networks:

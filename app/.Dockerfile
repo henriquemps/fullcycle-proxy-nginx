@@ -2,10 +2,6 @@ FROM node:16.15-slim
 
 WORKDIR /app
 
-COPY package*.json /app
-
-RUN npm install
-
 COPY . .
 
 RUN apt-get update && apt-get install -y wget
@@ -16,4 +12,4 @@ RUN chmod +x /usr/wait-for-it.sh
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["npm i && npm start"]
